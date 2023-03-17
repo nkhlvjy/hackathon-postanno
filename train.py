@@ -57,15 +57,17 @@ def train(cfg, writer, logger):
     )
 
     n_classes = t_loader.n_classes
+    batchSize = int(cfg["training"]["batch_size"])
+    nWorkers = int(cfg["training"]["n_workers"])
     trainloader = data.DataLoader(
         t_loader,
-        batch_size=cfg["training"]["batch_size"],
-        num_workers=cfg["training"]["n_workers"],
+        batch_size=batchSize,
+        num_workers=nWorkers,
         shuffle=True,
     )
 
     valloader = data.DataLoader(
-        v_loader, batch_size=cfg["training"]["batch_size"], num_workers=cfg["training"]["n_workers"]
+        v_loader, batch_size=batchSize, num_workers=nWorkers
     )
 
     # Setup Metrics
@@ -78,12 +80,12 @@ def train(cfg, writer, logger):
 
     # Setup optimizer, lr_scheduler and loss function
     optimizer_cls = get_optimizer(cfg)
-    optimizer_params = {k: v for k, v in cfg["training"]["optimizer"].items() if k != "name"}
-
+    optimizer_params = {k: float(v) for k, v in cfg["training"]["optimizer"].items() if k != "name"}
     optimizer = optimizer_cls(model.parameters(), **optimizer_params)
     logger.info("Using optimizer {}".format(optimizer))
 
-    scheduler = get_scheduler(optimizer, cfg["training"]["lr_schedule"])
+    scdit = cfg["training"]["lr_schedule"] if len(cfg["training"]["lr_schedule"]) != 0  else None
+    scheduler = get_scheduler(optimizer, scdit)
 
     loss_fn = get_loss_function(cfg)
     logger.info("Using loss {}".format(loss_fn))
@@ -113,8 +115,10 @@ def train(cfg, writer, logger):
     best_iou = -100.0
     i = start_iter
     flag = True
-
-    while i <= cfg["training"]["train_iters"] and flag:
+    train_iters = int(cfg["training"]["train_iters"])
+    print_interval = int(cfg["training"]["print_interval"])
+    val_interval = int(cfg["training"]["val_interval"])
+    while i <= train_iters and flag:
         for (images, labels) in trainloader:
             i += 1
             start_ts = time.time()
@@ -133,13 +137,13 @@ def train(cfg, writer, logger):
 
             time_meter.update(time.time() - start_ts)
 
-            if (i + 1) % cfg["training"]["print_interval"] == 0:
+            if (i + 1) % print_interval == 0:
                 fmt_str = "Iter [{:d}/{:d}]  Loss: {:.4f}  Time/Image: {:.4f}"
                 print_str = fmt_str.format(
                     i + 1,
-                    cfg["training"]["train_iters"],
+                    train_iters,
                     loss.item(),
-                    time_meter.avg / cfg["training"]["batch_size"],
+                    time_meter.avg / batchSize,
                 )
 
                 print(print_str)
@@ -147,9 +151,7 @@ def train(cfg, writer, logger):
                 writer.add_scalar("loss/train_loss", loss.item(), i + 1)
                 time_meter.reset()
 
-            if (i + 1) % cfg["training"]["val_interval"] == 0 or (i + 1) == cfg["training"][
-                "train_iters"
-            ]:
+            if (i + 1) % val_interval == 0 or (i + 1) == train_iters:
                 model.eval()
                 with torch.no_grad():
                     for i_val, (images_val, labels_val) in tqdm(enumerate(valloader)):
@@ -196,7 +198,7 @@ def train(cfg, writer, logger):
                     )
                     torch.save(state, save_path)
 
-            if (i + 1) == cfg["training"]["train_iters"]:
+            if (i + 1) == val_interval:
                 flag = False
                 break
 

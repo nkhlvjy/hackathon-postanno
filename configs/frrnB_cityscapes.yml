@@ -6,7 +6,7 @@ data:
     val_split: val
     img_rows: 512
     img_cols: 1024
-    path: /private/home/meetshah/misc_code/ps/data/VOCdevkit/VOC2012/
+    path: /Users/aniketbhushan/Downloads/cityscapes_data
 training:
     train_iters: 85000
     batch_size: 2

@@ -9,12 +9,13 @@ import re
 import json
 from ptsemseg.utils import recursive_glob
 import scipy.misc as m
+# from skimage import io, transform
 
 class PlaymentLoader (Dataset) :
     def __init__(
             self, 
             root,
-            split="train_aug",
+            split="train",
             is_transform=False,
             img_size=512,
             augmentations=None,
@@ -33,30 +34,13 @@ class PlaymentLoader (Dataset) :
 
         self.files = {}
 
-        self.images_base  = os.path.join(self.root, "original")
-        self.annotations_base = os.path.join(self.root, "annotated")
+        self.images_base  = os.path.join(self.root, "original", self.split)
+        self.annotations_base = os.path.join(self.root, "annotated", self.split)
         
         self.files[split] = recursive_glob(rootdir=self.images_base, suffix=".jpg")
 
-        self.allImagesPath = []
-        self.annotatedImagesPath = []
-
-        self.objectLabels = []
         self.class_map = None
         self.pascalLabels = None
-
-        for imageI in sorted(os.listdir(self.images_base)) :
-            self.allImagesPath.append(os.path.join(self.images_base, imageI))
-
-        for imageI in sorted(os.listdir(self.annotations_base)) :
-            self.annotatedImagesPath.append(os.path.join(self.annotations_base, imageI))
-
-        self.targetToClass = sorted(os.listdir(self.path)) # ['class0', 'class1']
-
-        for targetNo, targetI in enumerate(self.targetToClass) :
-            for imageI in sorted(os.listdir(os.path.join(self.path, targetI))) :
-                self.allImagesPath.append(os.path.join(self.path, targetI, imageI))
-                self.allTargets.append(targetNo)
 
         self.load_labels()
 
@@ -67,19 +51,27 @@ class PlaymentLoader (Dataset) :
     def __getitem__(self, index) :
 
         img_path = self.files[self.split][index].rstrip()
-        lbl_path = os.path.join(
-            self.annotations_base,
-            img_path.split(os.sep)[-2],
-            os.path.basename(img_path) + ".png",
-        )
+        pngfilename = os.path.splitext(os.path.basename(img_path))[0] + ".png"
+        lbl_path = os.path.join(self.annotations_base, pngfilename)
 
-        img = m.imread(img_path)
-        img = np.array(img, dtype=np.uint8)
+        img  = Image.open(img_path)
+        lbl  = Image.open(lbl_path)
+        # img  = Image.open(img_path).convert('RGB')
+        # lbl  = Image.open(lbl_path).convert('L')
 
-        lbl = m.imread(lbl_path)
-        lbl = self.encode_segmap(np.array(lbl, dtype=np.uint8))
+        # img = m.imread(img_path)
+        # lbl = m.imread(lbl_path)
+        
+        img = np.array(img, dtype=np.float32)
+        lbl = self.encode_segmap(np.array(lbl, dtype=np.float32))
+
+        if self.is_transform:
+            img, lbl = self.transform(img, lbl)
 
         return img, lbl
+    
+        # data =  self.to_tensor(img.convert('RGB'))
+        # label_seg =  self.to_tensor(lbl.convert('L'))
 
         # lbl_path = self.annotations_base
         # im  = Image.open(self.allImagesPath[index])
@@ -88,7 +80,7 @@ class PlaymentLoader (Dataset) :
         # return im, lbl
     
     def load_labels(self) : 
-        jsonpath = '/Users/playment/workspace/hackathon-postanno/classes.json'
+        jsonpath = 'classes.json'
         with open(jsonpath) as file:
             res = json.load(file)
             labels = res['legend']
@@ -101,9 +93,31 @@ class PlaymentLoader (Dataset) :
             self.class_map = class_map
             self.pascalLabels = np.asarray(list(class_map.values()))
 
-            self.n_classes = len(self.objectLabels)
+            self.n_classes = len(self.class_names)
 
+    def transform(self, img, lbl):
+        # img = m.imresize(img, (self.img_size[0], self.img_size[1]))  # uint8 with RGB mode
+        img = img[:, :, ::-1]  # RGB -> BGR
+        img = img.astype(np.float64)
+        # img -= self.mean
+        # if self.img_norm:
+        #     # Resize scales images from 0 to 255, thus we need
+        #     # to divide by 255.0
+        #     img = img.astype(float) / 255.0
+        # NHWC -> NCHW
+        img = img.transpose(2, 0, 1)
 
+        lbl = self.encode_segmap(lbl)
+        classes = np.unique(lbl)
+        lbl = lbl.astype(float)
+        # lbl = m.imresize(lbl, (self.img_size[0], self.img_size[1]), "nearest", mode="F")
+        lbl = lbl.astype(int)
+        assert np.all(classes == np.unique(lbl))
+
+        img = torch.from_numpy(img).float()
+        lbl = torch.from_numpy(lbl).long()
+        return img, lbl
+    
     def get_pascal_labels(self):
         """Load the mapping that associates pascal classes with label colors
 

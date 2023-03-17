@@ -2,17 +2,17 @@ model:
     arch: fcn8s
 data:
     dataset: playment
-    train_split: train_aug
+    train_split: train
     val_split: val
     img_rows: 'same'
     img_cols: 'same'
-    path: /Users/playment/Documents/playment-data
+    path: /Users/aniketbhushan/Documents/playment-data
 training:
     train_iters: 10
     batch_size: 1
     val_interval: 1000
-    n_workers: 1
-    print_interval: 50
+    n_workers: 0
+    print_interval: 1
     optimizer:
         name: 'sgd'
         lr: 1.0e-10

@@ -20,7 +20,7 @@ def get_scheduler(optimizer, scheduler_dict):
         logger.info("Using No LR Scheduling")
         return ConstantLR(optimizer)
 
-    s_type = scheduler_dict["name"]
+    s_type = scheduler_dict["name"] 
     scheduler_dict.pop("name")
 
     logging.info("Using {} scheduler with {} params".format(s_type, scheduler_dict))
