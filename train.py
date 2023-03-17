@@ -84,7 +84,7 @@ def train(cfg, writer, logger):
     optimizer = optimizer_cls(model.parameters(), **optimizer_params)
     logger.info("Using optimizer {}".format(optimizer))
 
-    scdit = cfg["training"]["lr_schedule"] if len(cfg["training"]["lr_schedule"]) != 0  else None
+    scdit = cfg["training"]["lr_schedule"] # if len(cfg["training"]["lr_schedule"]) != 0  else None
     scheduler = get_scheduler(optimizer, scdit)
 
     loss_fn = get_loss_function(cfg)
@@ -216,7 +216,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open(args.config) as fp:
-        cfg = yaml.load(fp, Loader=yaml.BaseLoader)
+        cfg = yaml.safe_load(fp)
+        # cfg = yaml.load(fp, Loader=yaml.BaseLoader)
 
     run_id = random.randint(1, 100000)
     logdir = os.path.join("runs", os.path.basename(args.config)[:-4], str(run_id))

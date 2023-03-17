@@ -1,0 +1,4 @@
+python3 train.py --config=./configs/playment_dataset.yml
+python3 validate.py --config=./configs/playment_dataset.yml --model_path= --eval_flip=False
+python3 test.py --model_path=./runs/playment_dataset/20479/fcn8s_playment_best_model.pkl --dataset=playment --img_path=/Users/aniketbhushan/Documents/Sandbox/image-seg/pytorch-semseg/2007_002266.jpg --out_path=./out/
+python3 test.py --config=./configs/playment_dataset.yml --model_path=./runs/playment_dataset/20479/fcn8s_playment_best_model.pkl --img_path=/Users/aniketbhushan/Documents/Sandbox/image-seg/pytorch-semseg/2007_002266.jpg --out_path=./out/

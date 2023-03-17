@@ -3,7 +3,8 @@ import torch
 import argparse
 import numpy as np
 import scipy.misc as misc
-
+import yaml
+from PIL import Image
 
 from ptsemseg.models import get_model
 from ptsemseg.loader import get_loader
@@ -18,7 +19,7 @@ except:
     )
 
 
-def test(args):
+def test(args, cfg):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -27,21 +28,27 @@ def test(args):
 
     # Setup image
     print("Read Input Image from : {}".format(args.img_path))
-    img = misc.imread(args.img_path)
+    img  = Image.open(args.img_path)
 
     data_loader = get_loader(args.dataset)
-    loader = data_loader(root=None, is_transform=True, img_norm=args.img_norm, test_mode=True)
+    # data_path = cfg["data"]["path"]
+    loader = data_loader(
+        root=cfg["data"]["path"],
+        is_transform=True, 
+        img_norm=args.img_norm,
+        img_size=(cfg["data"]["img_rows"], cfg["data"]["img_cols"]),
+        test_mode=True)
     n_classes = loader.n_classes
 
-    resized_img = misc.imresize(img, (loader.img_size[0], loader.img_size[1]), interp="bicubic")
+    resized_img = img.resize((loader.img_size[0], loader.img_size[1]), Image.BICUBIC)
 
-    orig_size = img.shape[:-1]
+    orig_size = img.size
     if model_name in ["pspnet", "icnet", "icnetBN"]:
         # uint8 with RGB mode, resize width and height which are odd numbers
-        img = misc.imresize(img, (orig_size[0] // 2 * 2 + 1, orig_size[1] // 2 * 2 + 1))
+        img = img.resize((orig_size[0] // 2 * 2 + 1, orig_size[1] // 2 * 2 + 1))
     else:
-        img = misc.imresize(img, (loader.img_size[0], loader.img_size[1]))
-
+        img = img.resize((loader.img_size[0], loader.img_size[1]))
+    img = np.array(img)
     img = img[:, :, ::-1]
     img = img.astype(np.float64)
     img -= loader.mean
@@ -50,7 +57,7 @@ def test(args):
 
     # NHWC -> NCHW
     img = img.transpose(2, 0, 1)
-    img = np.expand_dims(img, 0)
+    # img = np.expand_dims(img, 0)
     img = torch.from_numpy(img).float()
 
     # Setup Model
@@ -100,6 +107,14 @@ def test(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Params")
+    
+    parser.add_argument(
+        "--config",
+        nargs="?",
+        type=str,
+        default="",
+        help="root folder of tra",
+    )
     parser.add_argument(
         "--model_path",
         nargs="?",
@@ -154,4 +169,7 @@ if __name__ == "__main__":
         "--out_path", nargs="?", type=str, default=None, help="Path of the output segmap"
     )
     args = parser.parse_args()
-    test(args)
+
+    with open(args.config) as fp:
+        cfg = yaml.safe_load(fp)
+        test(args, cfg)

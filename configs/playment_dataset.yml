@@ -4,13 +4,13 @@ data:
     dataset: playment
     train_split: train
     val_split: val
-    img_rows: 'same'
-    img_cols: 'same'
+    img_rows: 373
+    img_cols: 500
     path: /Users/aniketbhushan/Documents/playment-data
 training:
     train_iters: 10
     batch_size: 1
-    val_interval: 1000
+    val_interval: 100
     n_workers: 0
     print_interval: 1
     optimizer:
@@ -22,4 +22,4 @@ training:
         name: 'cross_entropy'
         size_average: False
     lr_schedule:
-    resume: fcn8s_pascal_best_model.pkl
+    resume: fcn8s_playment_best_model.pkl

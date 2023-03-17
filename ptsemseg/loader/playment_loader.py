@@ -31,6 +31,7 @@ class PlaymentLoader (Dataset) :
         self.test_mode = test_mode
         self.n_classes = 0
         self.img_size = img_size if isinstance(img_size, tuple) else (img_size, img_size)
+        self.mean = np.array([104.00699, 116.66877, 122.67892])
 
         self.files = {}
 
@@ -48,36 +49,24 @@ class PlaymentLoader (Dataset) :
     def __len__(self) : 
         return len(self.files[self.split])
     
+
     def __getitem__(self, index) :
 
-        img_path = self.files[self.split][index].rstrip()
+        img_path    = self.files[self.split][index].rstrip()
         pngfilename = os.path.splitext(os.path.basename(img_path))[0] + ".png"
-        lbl_path = os.path.join(self.annotations_base, pngfilename)
+        lbl_path    = os.path.join(self.annotations_base, pngfilename)
 
         img  = Image.open(img_path)
         lbl  = Image.open(lbl_path)
-        # img  = Image.open(img_path).convert('RGB')
-        # lbl  = Image.open(lbl_path).convert('L')
 
-        # img = m.imread(img_path)
-        # lbl = m.imread(lbl_path)
-        
-        img = np.array(img, dtype=np.float32)
-        lbl = self.encode_segmap(np.array(lbl, dtype=np.float32))
+        # img = np.array(img, dtype=np.float32)
+        # lbl = self.encode_segmap(np.array(lbl, dtype=np.float32))
 
         if self.is_transform:
             img, lbl = self.transform(img, lbl)
 
         return img, lbl
     
-        # data =  self.to_tensor(img.convert('RGB'))
-        # label_seg =  self.to_tensor(lbl.convert('L'))
-
-        # lbl_path = self.annotations_base
-        # im  = Image.open(self.allImagesPath[index])
-        # lbl = Image.open(self.annotatedImagesPath[index])
-        
-        # return im, lbl
     
     def load_labels(self) : 
         jsonpath = 'classes.json'
@@ -96,20 +85,28 @@ class PlaymentLoader (Dataset) :
             self.n_classes = len(self.class_names)
 
     def transform(self, img, lbl):
-        # img = m.imresize(img, (self.img_size[0], self.img_size[1]))  # uint8 with RGB mode
+        img = img.resize((self.img_size[0], self.img_size[1])) # uint8 with RGB mode
+        img = np.array(img)
+
         img = img[:, :, ::-1]  # RGB -> BGR
         img = img.astype(np.float64)
-        # img -= self.mean
-        # if self.img_norm:
-        #     # Resize scales images from 0 to 255, thus we need
-        #     # to divide by 255.0
-        #     img = img.astype(float) / 255.0
+        img -= self.mean
+        if self.img_norm:
+            # Resize scales images from 0 to 255, thus we need
+            # to divide by 255.0
+            img = img.astype(float) / 255.0
+
         # NHWC -> NCHW
         img = img.transpose(2, 0, 1)
 
+        lbl = np.array(lbl)
         lbl = self.encode_segmap(lbl)
         classes = np.unique(lbl)
         lbl = lbl.astype(float)
+        lbl = Image.fromarray(lbl)
+        lbl = lbl.resize((self.img_size[0], self.img_size[1])) # uint8 with RGB mode
+        lbl = np.array(lbl)
+        
         # lbl = m.imresize(lbl, (self.img_size[0], self.img_size[1]), "nearest", mode="F")
         lbl = lbl.astype(int)
         assert np.all(classes == np.unique(lbl))
