@@ -4,8 +4,8 @@ data:
     dataset: playment
     train_split: train
     val_split: val
-    img_rows: 373
-    img_cols: 500
+    img_rows: 500
+    img_cols: 373
     path: /Users/aniketbhushan/Documents/playment-data
 training:
     train_iters: 10

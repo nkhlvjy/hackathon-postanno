@@ -57,7 +57,7 @@ def test(args, cfg):
 
     # NHWC -> NCHW
     img = img.transpose(2, 0, 1)
-    # img = np.expand_dims(img, 0)
+    img = np.expand_dims(img, 0)
     img = torch.from_numpy(img).float()
 
     # Setup Model
@@ -101,7 +101,8 @@ def test(args, cfg):
 
     decoded = loader.decode_segmap(pred)
     print("Classes found: ", np.unique(pred))
-    misc.imsave(args.out_path, decoded)
+    # misc.imsave(args.out_path, decoded)
+    Image.fromarray(decoded, 'RGB').save(args.out_path)
     print("Segmentation Mask Saved at: {}".format(args.out_path))
 
 
