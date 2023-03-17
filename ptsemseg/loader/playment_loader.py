@@ -12,8 +12,8 @@ class PlaymentLoader (Dataset) :
     def __init__(self, root) : 
 
         self.root = root
-        self.originalFolderPath  = os.path.join(self.root, "JPEGImages")
-        self.annotatedFolderPath = os.path.join(self.root, "SegmentationClass")
+        self.originalFolderPath  = os.path.join(self.root, "original")
+        self.annotatedFolderPath = os.path.join(self.root, "annotated")
         
         self.allImagesPath = []
         self.annotatedImagesPath = []
@@ -50,7 +50,7 @@ class PlaymentLoader (Dataset) :
         return im, lbl
     
     def load_labels(self) : 
-        jsonpath = '/Users/aniketbhushan/Documents/Sandbox/image-seg/pytorch-semseg/data/res.json'
+        jsonpath = '/Users/playment/workspace/hackathon-postanno/classes.json'
         with open(jsonpath) as file:
             res = json.load(file)
             labels = res['legend']

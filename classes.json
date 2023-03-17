@@ -1,0 +1,193 @@
+{
+  "legend": {
+      "Bird": {
+          "hex_color": "#f9aa25",
+          "rgb_color": "rgb(249, 170, 37)"
+      },
+      "Blue sky": {
+          "hex_color": "#eb08f9",
+          "rgb_color": "rgb(235, 8, 249)"
+      },
+      "Blue water": {
+          "hex_color": "#1880f9",
+          "rgb_color": "rgb(24, 128, 249)"
+      },
+      "Building": {
+          "hex_color": "#f6f904",
+          "rgb_color": "rgb(246, 249, 4)"
+      },
+      "Clothes": {
+          "hex_color": "#f90801",
+          "rgb_color": "rgb(249, 8, 1)"
+      },
+      "Dog/cat": {
+          "hex_color": "#2459f9",
+          "rgb_color": "rgb(36, 89, 249)"
+      },
+      "Earth": {
+          "hex_color": "#f9135d",
+          "rgb_color": "rgb(249, 19, 93)"
+      },
+      "Eye": {
+          "hex_color": "#fccde5",
+          "rgb_color": "rgb(252, 205, 229)"
+      },
+      "Eyebrow": {
+          "hex_color": "#b3de69",
+          "rgb_color": "rgb(179, 222, 105)"
+      },
+      "Face": {
+          "hex_color": "#0374f9",
+          "rgb_color": "rgb(3, 116, 249)"
+      },
+      "Flower": {
+          "hex_color": "#f9e416",
+          "rgb_color": "rgb(249, 228, 22)"
+      },
+      "Food": {
+          "hex_color": "#f7cd78",
+          "rgb_color": "rgb(247, 205, 120)"
+      },
+      "Furniture": {
+          "hex_color": "#06f9c0",
+          "rgb_color": "rgb(6, 249, 192)"
+      },
+      "Green grass": {
+          "hex_color": "#1174f9",
+          "rgb_color": "rgb(17, 116, 249)"
+      },
+      "Green plant": {
+          "hex_color": "#6b14f9",
+          "rgb_color": "rgb(107, 20, 249)"
+      },
+      "Hair": {
+          "hex_color": "#f94f02",
+          "rgb_color": "rgb(249, 79, 2)"
+      },
+      "Horse": {
+          "hex_color": "#269ef9",
+          "rgb_color": "rgb(38, 158, 249)"
+      },
+      "Indoor": {
+          "hex_color": "#f9a605",
+          "rgb_color": "rgb(249, 166, 5)"
+      },
+      "Inner Mouth": {
+          "hex_color": "#ef36cf",
+          "rgb_color": "rgb(239, 54, 207)"
+      },
+      "Light": {
+          "hex_color": "#0755f9",
+          "rgb_color": "rgb(7, 85, 249)"
+      },
+      "Lips": {
+          "hex_color": "#bc552d",
+          "rgb_color": "rgb(188, 85, 45)"
+      },
+      "Moon": {
+          "hex_color": "#f44bcd",
+          "rgb_color": "rgb(244, 75, 205)"
+      },
+      "Night sky": {
+          "hex_color": "#8c9600",
+          "rgb_color": "rgb(140, 150, 0)"
+      },
+      "None": {
+          "hex_color": "#000000",
+          "rgb_color": "rgb(0, 0, 0)"
+      },
+      "Other animal": {
+          "hex_color": "#c6b090",
+          "rgb_color": "rgb(198, 176, 144)"
+      },
+      "Other floor": {
+          "hex_color": "#5c109a",
+          "rgb_color": "rgb(92, 16, 154)"
+      },
+      "Other grass": {
+          "hex_color": "#f9bb12",
+          "rgb_color": "rgb(249, 187, 18)"
+      },
+      "Other plant": {
+          "hex_color": "#f0aeda",
+          "rgb_color": "rgb(240, 174, 218)"
+      },
+      "Other sky": {
+          "hex_color": "#28772d",
+          "rgb_color": "rgb(40, 119, 45)"
+      },
+      "Other texture surface": {
+          "hex_color": "#d60454",
+          "rgb_color": "rgb(214, 4, 84)"
+      },
+      "Other water": {
+          "hex_color": "#192ff9",
+          "rgb_color": "rgb(25, 47, 249)"
+      },
+      "Pavement": {
+          "hex_color": "#eff921",
+          "rgb_color": "rgb(239, 249, 33)"
+      },
+      "Paver": {
+          "hex_color": "#465a6e",
+          "rgb_color": "rgb(70, 90, 110)"
+      },
+      "Pebble/Rock": {
+          "hex_color": "#fdb462",
+          "rgb_color": "rgb(253, 180, 98)"
+      },
+      "Road asphalt": {
+          "hex_color": "#8fc08c",
+          "rgb_color": "rgb(143, 192, 140)"
+      },
+      "Skin": {
+          "hex_color": "#2cf900",
+          "rgb_color": "rgb(44, 249, 0)"
+      },
+      "Snow": {
+          "hex_color": "#78f7cd",
+          "rgb_color": "rgb(120, 247, 205)"
+      },
+      "Stone surface": {
+          "hex_color": "#dae060",
+          "rgb_color": "rgb(218, 224, 96)"
+      },
+      "Sunset / sunrise sky": {
+          "hex_color": "#f9092c",
+          "rgb_color": "rgb(249, 9, 44)"
+      },
+      "Teeth": {
+          "hex_color": "#f7f4f6",
+          "rgb_color": "rgb(247, 244, 246)"
+      },
+      "Text": {
+          "hex_color": "#ed23f9",
+          "rgb_color": "rgb(237, 35, 249)"
+      },
+      "Text Background": {
+          "hex_color": "#b3ffb4",
+          "rgb_color": "rgb(179, 255, 180)"
+      },
+      "Tree trunk / branch": {
+          "hex_color": "#f97d17",
+          "rgb_color": "rgb(249, 125, 23)"
+      },
+      "Vehicle": {
+          "hex_color": "#22f9a9",
+          "rgb_color": "rgb(34, 249, 169)"
+      },
+      "brick surface": {
+          "hex_color": "#d4bdca",
+          "rgb_color": "rgb(212, 189, 202)"
+      },
+      "concrete surface": {
+          "hex_color": "#d234c2",
+          "rgb_color": "rgb(210, 52, 194)"
+      },
+      "wooden surface": {
+          "hex_color": "#aae50e",
+          "rgb_color": "rgb(170, 229, 14)"
+      }
+  },
+  "url": "http://d5g2iurv6azza.cloudfront.net/cl/73518b58-3596-4fcf-a806-d0777e8ad356/pr/dd062710-a763-4549-823d-f3108cefa381/bt/762d368b-b220-49f3-80ae-dfe4e6264f62/jb/91f436e2-eb11-4adb-9d58-73e8326d1a45/batch_export_result/B8/B8_cropped_12MP/annotation/bartosz-zygadlo-xA0qTZ3VX3o-unsplash.png"
+}
