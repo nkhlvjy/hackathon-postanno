@@ -7,27 +7,49 @@ import torch
 import numpy as np
 import re
 import json
+from ptsemseg.utils import recursive_glob
+import scipy.misc as m
 
 class PlaymentLoader (Dataset) :
-    def __init__(self, root) : 
+    def __init__(
+            self, 
+            root,
+            split="train_aug",
+            is_transform=False,
+            img_size=512,
+            augmentations=None,
+            img_norm=True,
+            test_mode=False,
+            ) : 
 
         self.root = root
-        self.originalFolderPath  = os.path.join(self.root, "original")
-        self.annotatedFolderPath = os.path.join(self.root, "annotated")
+        self.split = split
+        self.is_transform = is_transform
+        self.augmentations = augmentations
+        self.img_norm = img_norm
+        self.test_mode = test_mode
+        self.n_classes = 0
+        self.img_size = img_size if isinstance(img_size, tuple) else (img_size, img_size)
+
+        self.files = {}
+
+        self.images_base  = os.path.join(self.root, "original")
+        self.annotations_base = os.path.join(self.root, "annotated")
         
+        self.files[split] = recursive_glob(rootdir=self.images_base, suffix=".jpg")
+
         self.allImagesPath = []
         self.annotatedImagesPath = []
-        self.n_classes = 0
 
         self.objectLabels = []
-        self.labelToRGB = None
+        self.class_map = None
         self.pascalLabels = None
 
-        for imageI in sorted(os.listdir(self.originalFolderPath)) :
-            self.allImagesPath.append(os.path.join(self.originalFolderPath, imageI))
+        for imageI in sorted(os.listdir(self.images_base)) :
+            self.allImagesPath.append(os.path.join(self.images_base, imageI))
 
-        for imageI in sorted(os.listdir(self.annotatedFolderPath)) :
-            self.annotatedImagesPath.append(os.path.join(self.annotatedFolderPath, imageI))
+        for imageI in sorted(os.listdir(self.annotations_base)) :
+            self.annotatedImagesPath.append(os.path.join(self.annotations_base, imageI))
 
         self.targetToClass = sorted(os.listdir(self.path)) # ['class0', 'class1']
 
@@ -40,28 +62,44 @@ class PlaymentLoader (Dataset) :
 
     
     def __len__(self) : 
-        return len(self.allImagesPath)
+        return len(self.files[self.split])
     
     def __getitem__(self, index) :
 
-        im  = Image.open(self.allImagesPath[index])
-        lbl = Image.open(self.annotatedImagesPath[index])
+        img_path = self.files[self.split][index].rstrip()
+        lbl_path = os.path.join(
+            self.annotations_base,
+            img_path.split(os.sep)[-2],
+            os.path.basename(img_path) + ".png",
+        )
+
+        img = m.imread(img_path)
+        img = np.array(img, dtype=np.uint8)
+
+        lbl = m.imread(lbl_path)
+        lbl = self.encode_segmap(np.array(lbl, dtype=np.uint8))
+
+        return img, lbl
+
+        # lbl_path = self.annotations_base
+        # im  = Image.open(self.allImagesPath[index])
+        # lbl = Image.open(self.annotatedImagesPath[index])
         
-        return im, lbl
+        # return im, lbl
     
     def load_labels(self) : 
         jsonpath = '/Users/playment/workspace/hackathon-postanno/classes.json'
         with open(jsonpath) as file:
             res = json.load(file)
             labels = res['legend']
-            labelToRGB = {}
+            class_map = {}
             for key, val in labels.items() : 
                 m = re.findall(r"rgb\((\d+), (\d+), (\d+)\)", val['rgb_color'])
-                labelToRGB[key] = list(m[0])
+                class_map[key] = list(m[0])
         
-            self.objectLabels = labels.keys()
-            self.labelToRGB = labelToRGB
-            self.pascalLabels = np.asarray(list(labelToRGB.values()))
+            self.class_names = labels.keys()
+            self.class_map = class_map
+            self.pascalLabels = np.asarray(list(class_map.values()))
 
             self.n_classes = len(self.objectLabels)
 

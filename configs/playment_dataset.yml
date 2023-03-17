@@ -1,7 +1,7 @@
 model:
     arch: fcn8s
 data:
-    dataset: pascal
+    dataset: playment
     train_split: train_aug
     val_split: val
     img_rows: 'same'
